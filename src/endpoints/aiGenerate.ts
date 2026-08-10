@@ -45,7 +45,6 @@ async handle(c: AppContext) {
         details: error.message || String(error)
       }, { status: 500 });
     }
-  }
 
 
 
