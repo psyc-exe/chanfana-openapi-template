@@ -24,21 +24,25 @@ export class AIGenerateEndpoint extends OpenAPIRoute {
     },
   };
 
-    async handle(c: AppContext) {
+      async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof this.schema>();
     const { prompt, model } = data.body;
 
     try {
-      // Try to run the AI model
       const response = await c.env.AI.run(model, {
-        prompt: prompt,
+        // 1. Use the chat format instead of a raw prompt
+        messages: [
+          { role: "system", content: "You are a helpful AI assistant." },
+          { role: "user", content: prompt }
+        ],
+        // 2. Increase the output length (up to 2048/4096 depending on the model)
+        max_tokens: 1024 
       });
 
       return {
         result: response,
       };
     } catch (error: any) {
-      // If it crashes, return the EXACT error message to the Swagger UI
       return Response.json({
         success: false,
         message: "AI Execution Failed",
@@ -46,4 +50,3 @@ export class AIGenerateEndpoint extends OpenAPIRoute {
       }, { status: 500 });
     }
   }
-}
