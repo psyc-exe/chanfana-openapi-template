@@ -46,3 +46,4 @@ export class AIGenerateEndpoint extends OpenAPIRoute {
       }, { status: 500 });
     }
   }
+}
