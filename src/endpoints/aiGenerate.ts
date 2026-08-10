@@ -1,6 +1,6 @@
 import { OpenAPIRoute, contentJson } from 'chanfana';
 import { z } from 'zod';
-import { type AppContext, type Env } from './index';
+import type { AppContext } from '../types'; // Updated to point to your types file
 
 export class AIGenerateEndpoint extends OpenAPIRoute {
   schema = {
@@ -24,17 +24,28 @@ export class AIGenerateEndpoint extends OpenAPIRoute {
     },
   };
 
-  async handle(c: AppContext) {
-    const data = await this.getValidatedData();
+async handle(c: AppContext) {
+    const data = await this.getValidatedData<typeof this.schema>();
     const { prompt, model } = data.body;
 
-    // Run Cloudflare Workers AI model via the binding
-    const response = await c.env.AI.run(model, {
-      prompt: prompt,
-    });
+    try {
+      // Try to run the AI model
+      const response = await c.env.AI.run(model, {
+        prompt: prompt,
+      });
 
-    return {
-      result: response,
-    };
+      return {
+        result: response,
+      };
+    } catch (error: any) {
+      // If it crashes, return the EXACT error message to the Swagger UI
+      return Response.json({
+        success: false,
+        message: "AI Execution Failed",
+        details: error.message || String(error)
+      }, { status: 500 });
+    }
   }
-}
+
+
+
