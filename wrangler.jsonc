@@ -12,5 +12,8 @@
 			"database_name": "openapi-template-db",
 			"database_id": "984323b7-ee18-4ac2-aa1f-9e763ec44a0d"
 		}
-	]
+	],
+	"ai": {
+		"binding": "AI"
+	}
 }
